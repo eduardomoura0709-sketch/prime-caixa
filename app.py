@@ -32,6 +32,37 @@ st.markdown("""
     /* Fundo geral */
     .stApp { background-color: #f0f2f6; }
 
+    /* Forçar labels e textos visíveis */
+    label, .stTextInput label, .stSelectbox label,
+    .stNumberInput label, .stDateInput label,
+    p, span, div { color: #1a237e !important; }
+
+    /* Inputs com fundo branco e texto escuro */
+    .stTextInput input, .stNumberInput input,
+    .stSelectbox select, [data-baseweb="input"] input,
+    [data-baseweb="select"] div {
+        background-color: white !important;
+        color: #1a1a1a !important;
+        border: 1.5px solid #c5cae9 !important;
+    }
+
+    /* Cabeçalho — manter branco */
+    .cab, .cab * { color: white !important; }
+
+    /* Métricas — manter cores */
+    [data-testid="stMetricValue"] { color: #1a237e !important; }
+    [data-testid="stMetricLabel"] { color: #555 !important; }
+
+    /* Fundo dos tabs */
+    [data-testid="stTabs"] { background: white; border-radius: 10px; padding: 8px; }
+
+    /* Botão salvar */
+    .stFormSubmitButton button {
+        background-color: #1565c0 !important;
+        color: white !important;
+        font-weight: 700 !important;
+    }
+
     /* Cabeçalho personalizado */
     .cab {
         background: #b71c1c;
