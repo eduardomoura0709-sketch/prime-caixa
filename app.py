@@ -7,6 +7,9 @@ Autor: desenvolvido com Claude
 import sqlite3
 import os
 from datetime import date, datetime
+from zoneinfo import ZoneInfo
+
+BSB = ZoneInfo("America/Sao_Paulo")
 from contextlib import contextmanager
 
 import pandas as pd
@@ -45,21 +48,34 @@ st.markdown("""
         border: 1.5px solid #c5cae9 !important;
     }
 
-    /* Selects */
-    [data-baseweb="select"] > div {
+    /* Selects — forçar visibilidade */
+    [data-baseweb="select"] > div,
+    [data-baseweb="select"] > div > div {
         background-color: white !important;
         border: 1.5px solid #c5cae9 !important;
-    }
-    [data-baseweb="select"] span,
-    [data-baseweb="select"] div[class*="placeholder"] {
         color: #1a1a1a !important;
     }
+    [data-baseweb="select"] span,
+    [data-baseweb="select"] div,
+    [data-baseweb="select"] input,
+    [data-baseweb="select"] * {
+        color: #1a1a1a !important;
+    }
+    /* Placeholder */
+    [data-baseweb="select"] [class*="placeholder"] {
+        color: #888 !important;
+    }
     /* Dropdown aberto */
-    [data-baseweb="popover"] li {
+    [data-baseweb="menu"],
+    [data-baseweb="menu"] li,
+    [data-baseweb="menu"] ul,
+    [data-baseweb="popover"] *,
+    [role="listbox"] * {
         color: #1a1a1a !important;
         background-color: white !important;
     }
-    [data-baseweb="popover"] li:hover {
+    [data-baseweb="menu"] li:hover,
+    [role="option"]:hover {
         background-color: #e8eaf6 !important;
     }
 
@@ -263,7 +279,7 @@ def tela_login():
 
 def cabecalho():
     loja = st.session_state["loja"]
-    agora = datetime.now().strftime("%d/%m/%Y  %H:%M")
+    agora = datetime.now(BSB).strftime("%d/%m/%Y  %H:%M")
     st.markdown(f"""
     <div class="cab">
         <div>
@@ -308,7 +324,7 @@ def aba_nova_venda(cod: str):
             st.error(f"⚠️ Preencha: {', '.join(erros)}")
         else:
             hoje = date.today().isoformat()
-            hora = datetime.now().strftime("%H:%M")
+            hora = datetime.now(BSB).strftime("%H:%M")
             with conn(cod) as c:
                 c.execute(
                     "INSERT INTO vendas (data,hora,descricao,categoria,pagamento,valor,vendedor,obs) VALUES (?,?,?,?,?,?,?,?)",
@@ -467,7 +483,7 @@ def aba_despesas(cod: str):
             st.error("⚠️ Preencha a descrição e o valor.")
         else:
             hoje = date.today().isoformat()
-            hora = datetime.now().strftime("%H:%M")
+            hora = datetime.now(BSB).strftime("%H:%M")
             with conn(cod) as c:
                 c.execute(
                     "INSERT INTO despesas (data,hora,descricao,categoria,valor,obs) VALUES (?,?,?,?,?,?)",
