@@ -39,11 +39,28 @@ st.markdown("""
 
     /* Inputs com fundo branco e texto escuro */
     .stTextInput input, .stNumberInput input,
-    .stSelectbox select, [data-baseweb="input"] input,
-    [data-baseweb="select"] div {
+    [data-baseweb="input"] input {
         background-color: white !important;
         color: #1a1a1a !important;
         border: 1.5px solid #c5cae9 !important;
+    }
+
+    /* Selects */
+    [data-baseweb="select"] > div {
+        background-color: white !important;
+        border: 1.5px solid #c5cae9 !important;
+    }
+    [data-baseweb="select"] span,
+    [data-baseweb="select"] div[class*="placeholder"] {
+        color: #1a1a1a !important;
+    }
+    /* Dropdown aberto */
+    [data-baseweb="popover"] li {
+        color: #1a1a1a !important;
+        background-color: white !important;
+    }
+    [data-baseweb="popover"] li:hover {
+        background-color: #e8eaf6 !important;
     }
 
     /* Cabeçalho — manter branco */
@@ -271,10 +288,10 @@ def aba_nova_venda(cod: str):
         c1, c2 = st.columns(2)
         with c1:
             descricao = st.text_input("📝 Descrição do Produto *", placeholder="Ex: Capinha iPhone 13 preta")
-            categoria = st.selectbox("📦 Categoria *", [""] + CATEGORIAS)
+            categoria = st.selectbox("📦 Categoria *", CATEGORIAS)
             vendedor  = st.text_input("👤 Vendedor (opcional)")
         with c2:
-            pagamento = st.selectbox("💳 Forma de Pagamento *", [""] + PAGAMENTOS)
+            pagamento = st.selectbox("💳 Forma de Pagamento *", PAGAMENTOS)
             valor     = st.number_input("💵 Valor (R$) *", min_value=0.0, step=0.50, format="%.2f")
             obs       = st.text_input("💬 Observação (opcional)")
 
@@ -438,7 +455,7 @@ def aba_despesas(cod: str):
         c1, c2 = st.columns(2)
         with c1:
             desc  = st.text_input("📝 Descrição *", placeholder="Ex: Compra de capas")
-            cat   = st.selectbox("📦 Categoria", [""] + CAT_DESPESA)
+            cat   = st.selectbox("📦 Categoria", CAT_DESPESA)
         with c2:
             valor = st.number_input("💵 Valor (R$) *", min_value=0.0, step=0.50, format="%.2f")
             obs   = st.text_input("💬 Observação (opcional)")
@@ -593,8 +610,8 @@ def aba_relatorio(cod: str):
     # Por dia
     st.markdown("**📅 Faturamento por Dia**")
     por_dia = v_mes.groupby(v_mes["data"].dt.strftime("%d/%m"))["valor"].sum().reset_index()
-    por_dia.columns = ["Dia", "Total"]
-    st.bar_chart(por_dia.set_index("Dia"))
+    por_dia.columns = ["Dia", "Total (R$)"]
+    st.line_chart(por_dia.set_index("Dia"), height=220, use_container_width=True)
 
     # Por categoria
     col1, col2 = st.columns(2)
@@ -678,11 +695,10 @@ else:
     else:
         cabecalho()
 
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5 = st.tabs([
             "🛒 Nova Venda",
             "💰 Caixa do Dia",
             "📋 Histórico",
-            "💸 Despesas",
             "🔒 Fechamento",
             "📊 Relatório Mensal",
         ])
@@ -690,9 +706,8 @@ else:
         with tab1: aba_nova_venda(cod)
         with tab2: aba_caixa_dia(cod)
         with tab3: aba_historico(cod)
-        with tab4: aba_despesas(cod)
-        with tab5: aba_fechamento(cod)
-        with tab6: aba_relatorio(cod)
+        with tab4: aba_fechamento(cod)
+        with tab5: aba_relatorio(cod)
 
         with st.sidebar:
             st.markdown(f"**🏪 {st.session_state['loja']}**")
