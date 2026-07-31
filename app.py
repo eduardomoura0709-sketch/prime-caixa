@@ -410,12 +410,22 @@ def aba_historico(cod: str):
             mime="text/csv",
         )
 
-    # Tabela
-    df_show = df[["data","hora","descricao","categoria","pagamento","valor","vendedor"]].copy()
-    df_show["data"]  = pd.to_datetime(df_show["data"]).dt.strftime("%d/%m/%Y")
-    df_show["valor"] = df_show["valor"].apply(brl)
-    df_show.columns = ["Data","Hora","Descrição","Categoria","Pagamento","Valor","Vendedor"]
-    st.dataframe(df_show.reset_index(drop=True), use_container_width=True, hide_index=True)
+    # Tabela com botão de excluir
+    for _, row in df.iterrows():
+        c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 0.7, 2.5, 1.5, 1.5, 1, 1, 0.4])
+        with c1: st.write(pd.to_datetime(row["data"]).strftime("%d/%m/%Y"))
+        with c2: st.write(row["hora"])
+        with c3: st.write(row["descricao"])
+        with c4: st.write(row["categoria"])
+        with c5: st.write(row["pagamento"])
+        with c6: st.write(brl(row["valor"]))
+        with c7: st.write(row["vendedor"] or "—")
+        with c8:
+            if st.button("✕", key=f"del_{row['id']}", help="Excluir"):
+                with conn(cod) as c:
+                    c.execute("DELETE FROM vendas WHERE id=?", (row["id"],))
+                st.rerun()
+        st.divider()
 
 # ============================================================
 # ABA: DESPESAS
